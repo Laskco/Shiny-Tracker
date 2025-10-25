@@ -10,33 +10,35 @@
     <style>
         :root {
             --bg-body: #212121;
-            --bg-card: #c0c0c0;
-            --text-color: #000000;
+            --bg-card: rgba(130, 93, 151, 0.45);
+            --title-bar-bg: #4D2D5E;
+            --text-color: #FFFFFF;
+            --bg-screen: rgba(0, 0, 0, 0.5);
             --border-light: #dfdfdf;
             --border-dark: #656565;
-            --title-bar-bg: #000080;
             --title-bar-text: #ffffff;
-            
             --yellow: #ffff00;
             --cyan: #00ffff;
             --magenta: #ff00ff;
             --red: #ff0000;
             --green: #00ff00;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         html {
             height: 100%;
         }
-
         body {
             font-family: 'Press Start 2P', cursive;
-            background-color: var(--bg-body);
+            background-color: #1a1a2e;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 25% 25%, rgba(177, 158, 200, 0.1), transparent 35%),
+                radial-gradient(circle at 75% 75%, rgba(77, 45, 94, 0.15), transparent 35%);
+            background-size: 100% 4px, 200px 200px, 200px 200px;
             color: var(--text-color);
             padding: 20px;
             line-height: 1.5;
@@ -45,7 +47,6 @@
             display: flex;
             flex-direction: column;
         }
-        
         body::before {
             content: "";
             position: fixed;
@@ -56,9 +57,8 @@
             background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px);
             background-size: 100% 4px;
             pointer-events: none;
-            z-index: 1000;
+            z-index: -1;
         }
-
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -66,9 +66,8 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            min-height: 0; 
+            min-height: 0;
         }
-
         .header {
             text-align: center;
             margin-bottom: 20px;
@@ -77,28 +76,26 @@
             border-top-color: var(--border-light);
             border-left-color: var(--border-light);
             background: var(--bg-card);
-            flex-shrink: 0; 
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             color: var(--text-color);
-            text-shadow: 2px 2px var(--border-dark);
+            text-shadow: 2px 2px #000;
         }
-
         .header p {
             font-size: 0.8rem;
             color: var(--text-color);
         }
-
         .main-grid {
             display: grid;
             gap: 20px;
             flex-grow: 1;
             min-height: 0;
         }
-
         @media (min-width: 1024px) {
             .main-grid {
                 grid-template-columns: 350px 1fr 1fr;
@@ -114,7 +111,6 @@
              #hunt-timer-card { grid-area: hunt-timer; }
              #history-card { grid-area: history; }
         }
-
         .card {
             background: var(--bg-card);
             border: 2px solid;
@@ -123,8 +119,9 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-
         .card-content {
             padding: 15px;
             border: 2px solid;
@@ -132,9 +129,8 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0; 
+            min-height: 0;
         }
-
         .card-title {
             font-size: 1rem;
             padding: 5px 10px;
@@ -144,22 +140,19 @@
             text-transform: uppercase;
             flex-shrink: 0;
         }
-        
         hr.retro {
             border: none;
             border-top: 2px solid var(--border-dark);
             border-bottom: 2px solid var(--border-light);
             margin: 20px 0;
         }
-
         .pokemon-display {
             text-align: center;
-            background: #000;
+            background: var(--bg-screen);
             padding: 15px;
             border: 2px inset var(--border-dark);
             margin-bottom: 15px;
         }
-
         .pokemon-sprite {
             width: 128px;
             height: 128px;
@@ -167,74 +160,65 @@
             margin: 10px auto;
             transform: scale(1.5);
         }
-
         .pokemon-name {
             font-size: 1.5rem;
             margin: 15px 0 5px 0;
             color: var(--green);
         }
-
         .pokemon-id {
             font-size: 1rem;
             color: var(--green);
             margin-bottom: 15px;
         }
-
         .badge {
             display: inline-block;
             padding: 8px 12px;
-            border: 2px solid var(--text-color);
+            border: 2px solid var(--border-light);
             font-size: 0.6rem;
             margin: 8px 4px 0 4px;
             text-transform: uppercase;
+            color: #fff;
         }
-
-        .badge-danger { background: var(--red); color: #fff; }
-        .badge-warning { background: var(--yellow); color: var(--text-color); }
-        .badge-info { background: var(--cyan); color: var(--text-color); }
-
+        .badge-danger { background: var(--red); }
+        .badge-warning { background: var(--yellow); color: #000; }
+        .badge-info { background: var(--cyan); color: #000; }
         .search-input, .method-select, .timer-input {
             width: 100%;
             padding: 10px;
-            background: var(--border-light);
+            background: rgba(255, 255, 255, 0.6);
             border: 2px solid;
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-            color: var(--text-color);
+            color: #000;
             font-size: 0.8rem;
             font-family: 'Press Start 2P', cursive;
         }
-        
         .search-input:focus, .method-select:focus, .timer-input:focus {
             outline: 2px dotted var(--title-bar-bg);
             outline-offset: -2px;
         }
-
         #pokedex-card .card-content {
             padding: 10px;
         }
-        
         .pokedex-selector {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
             min-height: 0;
         }
-        
         .pokemon-list {
             overflow-y: auto;
             border: 2px solid;
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             padding: 5px;
             flex-grow: 1;
-            background: var(--border-light);
+            background: rgba(255, 255, 255, 0.6);
             margin-top: 15px;
             max-height: 550px;
+            color: #000;
         }
-        
         .pokemon-list::-webkit-scrollbar { width: 16px; }
         .pokemon-list::-webkit-scrollbar-track { background: var(--bg-card); }
-        .pokemon-list::-webkit-scrollbar-thumb { background: var(--border-dark); border: 2px solid var(--bg-card); }
-
+        .pokemon-list::-webkit-scrollbar-thumb { background: var(--title-bar-bg); border: 2px solid var(--bg-card); }
         .pokemon-item {
             padding: 8px 10px;
             cursor: pointer;
@@ -247,25 +231,20 @@
         }
         .pokemon-item:hover { background: rgba(0,0,0,0.1); }
         .pokemon-item.selected { background: var(--title-bar-bg); color: var(--title-bar-text); }
-        
         .counter-card { text-align: center; }
-
         .counter-value {
             font-size: 4rem;
-            color: var(--text-color);
             margin: 20px 0;
             line-height: 1;
-            background: #000;
+            background: var(--bg-screen);
             color: var(--yellow);
             padding: 20px;
             border: 2px inset var(--border-dark);
         }
-
         .counter-label {
             font-size: 1rem;
             margin-bottom: 10px;
         }
-
         .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -273,7 +252,6 @@
             margin-top: 20px;
         }
         .btn-group.three-buttons { grid-template-columns: repeat(3, 1fr); }
-        
         .btn {
             padding: 12px 15px;
             font-size: 0.8rem;
@@ -281,7 +259,8 @@
             border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
             cursor: pointer;
             font-family: 'Press Start 2P', cursive;
-            background-color: var(--bg-card);
+            background-color: rgba(130, 93, 151, 0.6);
+            color: var(--text-color);
             transition: none;
         }
         .btn:active:not(:disabled) {
@@ -290,33 +269,30 @@
         }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-full { grid-column: 1 / -1; }
-
         #hunt-timer-display {
             font-size: 2rem;
             text-align: center;
             margin: 20px 0;
-            background: #000;
+            background: var(--bg-screen);
             color: var(--cyan);
             padding: 15px;
             border: 2px inset var(--border-dark);
         }
-        
         .timer-countdown {
             font-size: 1rem;
             text-align: center;
             margin-top: 15px;
             color: var(--magenta);
+            text-shadow: 1px 1px #000;
         }
-
         .odds-info {
             display: grid;
             gap: 15px;
             margin-top: 20px;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         }
-
         .odds-stat {
-            background: var(--bg-card);
+            background: rgba(0,0,0,0.2);
             padding: 15px;
             border: 2px inset var(--border-dark);
         }
@@ -326,10 +302,8 @@
             text-transform: uppercase;
         }
         .odds-stat-value { font-size: 1.2rem; }
-
         .method-select option { background: #fff; color: #000; }
-
-        .history-list { max-height: 300px; overflow-y: auto; }
+        .history-list { max-height: 300px; overflow-y: auto; color: #000;}
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -338,10 +312,10 @@
             border: 2px inset var(--border-dark);
             margin-bottom: 10px;
             gap: 10px;
+            background: rgba(255,255,255,0.5);
         }
         .history-pokemon { font-size: 0.8rem; }
         .history-count { color: var(--title-bar-bg); font-size: 1rem; }
-        
         .delete-hunt-btn {
             background: var(--bg-card);
             color: var(--red);
@@ -359,81 +333,72 @@
         .delete-hunt-btn:active {
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
         }
-
-        .alert { 
-            padding: 15px; 
-            margin-top: 15px; 
+        .alert {
+            padding: 15px;
+            margin-top: 15px;
             font-size: 0.7rem;
             border: 2px solid;
+            text-shadow: 1px 1px #000;
         }
-        .alert-danger { border-color: var(--red); color: var(--red); }
-        .alert-warning { border-color: var(--yellow); color: var(--yellow); }
-
+        .alert-danger { border-color: var(--red); color: var(--red); background: rgba(255,0,0,0.1); }
+        .alert-warning { border-color: var(--yellow); color: var(--yellow); background: rgba(255,255,0,0.1); }
         .success-message {
             position: fixed;
             top: 30px;
             right: 30px;
             padding: 15px 25px;
             background: var(--green);
-            color: var(--text-color);
+            color: #000;
             border: 2px solid;
             border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
             z-index: 1000;
             animation: fadeIn 0.5s;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .loading { text-align: center; padding: 40px; font-size: 0.8rem; }
-        .spinner { display: none; /* No spinners in the 90s */ }
-        
+        .loading { text-align: center; padding: 40px; font-size: 0.8rem; color: #000; }
+        .spinner { display: none; }
         label {
             display: block;
             margin-bottom: 10px;
             font-size: 0.8rem;
         }
-
         .donation-section {
             margin-top: auto;
             padding-top: 15px;
             border-top: 2px solid var(--border-dark);
             text-align: center;
         }
-
         .donation-section h4 {
             font-size: 0.8rem;
             margin-bottom: 10px;
-            color: var(--title-bar-bg);
+            color: var(--text-color);
+            text-shadow: 2px 2px #000;
         }
-
         .donation-links {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .donation-btn {
             display: inline-block;
             padding: 10px 15px;
-            background: var(--border-light);
+            background: rgba(255,255,255,0.6);
             border: 2px solid;
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-            color: var(--text-color);
+            color: #000;
             font-family: 'Press Start 2P', cursive;
             font-size: 0.7rem;
             text-decoration: none;
             text-align: center;
             transition: none;
         }
-
         .donation-btn:hover {
             background: rgba(0,0,0,0.1);
         }
-
         .donation-btn:active {
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
             transform: translate(1px, 1px);
         }
-
         @media (max-width: 600px) {
             body { padding: 10px; font-size: 14px; }
             .header h1 { font-size: 1.5rem; }
@@ -452,9 +417,7 @@
             <h1>SHINY TRACKER</h1>
             <p>v.1996</p>
         </header>
-
         <main class="main-grid">
-            
             <div class="card" id="pokedex-card">
                 <h3 class="card-title">POKEDEX.EXE</h3>
                 <div class="card-content">
@@ -481,7 +444,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="card" id="counter-card">
                  <h3 class="card-title">CONTROL_PANEL.EXE</h3>
                  <div class="card-content">
@@ -492,9 +454,7 @@
                         <button id="reset-btn" class="btn">RESET</button>
                         <button id="save-hunt-btn" class="btn">SAVE</button>
                     </div>
-
                     <hr class="retro">
-                    
                     <label>GAME/GEN:</label>
                     <select id="generation-select" class="method-select">
                         <option value="gen9-za">Gen 9 - Legends: Z-A</option>
@@ -510,12 +470,10 @@
                         <option value="gen3">Gen 3 - RSE/FRLG</option>
                         <option value="gen2">Gen 2 - GSC</option>
                     </select>
-
                     <label style="margin-top:15px;">HUNT METHOD:</label>
                     <select id="hunt-method" class="method-select">
                         <option value="4096">Random Encounter (1/4096)</option>
                     </select>
-
                     <div class="odds-info">
                         <div class="odds-stat">
                             <div class="odds-stat-label">ODDS</div>
@@ -533,7 +491,6 @@
                     <div id="odds-alerts"></div>
                 </div>
             </div>
-
             <div class="card" id="auto-counter-card">
                 <h3 class="card-title">AUTO_CNT.EXE</h3>
                 <div class="card-content">
@@ -546,7 +503,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="card" id="hunt-timer-card">
                 <h3 class="card-title">TIMER.EXE</h3>
                 <div class="card-content">
@@ -558,7 +514,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="card" id="history-card">
                 <h3 class="card-title">HISTORY.DAT</h3>
                 <div class="card-content">
@@ -567,33 +522,27 @@
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
-
     <script>
         let encounterCount = 0;
         let allPokemon = [];
         let currentPokemon = { name: 'charizard', id: 6 };
         let huntHistory = [];
-        
         let timerInterval = null;
         let countdownInterval = null;
         let countdownValue = 0;
-
         let huntTimerInterval = null;
         let huntStartTime = 0;
         let huntElapsedTime = 0;
         let isHuntTimerRunning = false;
-
         const shinyLockedPokemon = { 'mew': 'Gen 2 (IVs prevent shiny)', 'celebi': 'Gen 3-7', 'manaphy': 'Gen 4 (Egg)', 'arceus': 'Gen 4-5', 'victini': 'Gen 5-7', 'reshiram': 'Gen 5', 'zekrom': 'Gen 5', 'keldeo': 'Gen 5-8', 'meloetta': 'Gen 5-7', 'groudon': 'Gen 6 ORAS Story', 'kyogre': 'Gen 6 ORAS Story', 'rayquaza': 'Gen 6 ORAS Story', 'zygarde': 'Gen 6-7', 'hoopa': 'Gen 6-7', 'volcanion': 'Gen 6-7', 'tapu-koko': 'Gen 7', 'tapu-lele': 'Gen 7', 'tapu-bulu': 'Gen 7', 'tapu-fini': 'Gen 7', 'cosmog': 'Gen 7-8', 'cosmoem': 'Gen 7', 'solgaleo': 'Gen 7-9', 'lunala': 'Gen 7-9', 'nihilego': 'Gen 7', 'buzzwole': 'Gen 7', 'pheromosa': 'Gen 7', 'xurkitree': 'Gen 7', 'celesteela': 'Gen 7', 'kartana': 'Gen 7', 'guzzlord': 'Gen 7', 'necrozma': 'Gen 7-9', 'magearna': 'Gen 7', 'marshadow': 'Gen 7', 'zeraora': 'Gen 7', 'pikachu': 'Gen 8 LGPE Starter / SwSh Gift', 'eevee': 'Gen 8 LGPE Starter / SwSh Gift', 'grookey': 'Gen 8 SwSh Starter', 'scorbunny': 'Gen 8 SwSh Starter', 'sobble': 'Gen 8 SwSh Starter', 'type-null': 'Gen 8 SwSh', 'silvally': 'Gen 8 SwSh', 'zacian': 'Gen 8 SwSh', 'zamazenta': 'Gen 8 SwSh', 'eternatus': 'Gen 8 SwSh', 'kubfu': 'Gen 8-9', 'urshifu': 'Gen 8 IoA', 'zarude': 'Gen 8 IoA', 'calyrex': 'Gen 8 CT', 'glastrier': 'Gen 8-9', 'spectrier': 'Gen 8-9', 'melmetal': 'Gen 8 Gigantamax', 'poipole': 'Gen 8 CT', 'articuno-galar': 'Gen 8 CT', 'zapdos-galar': 'Gen 8 CT', 'moltres-galar': 'Gen 8 CT', 'jirachi': 'Gen 8 BDSP Gift', 'rowlet': 'Gen 8 PLA Starter', 'cyndaquil': 'Gen 8 PLA Starter', 'oshawott': 'Gen 8 PLA Starter', 'uxie': 'Gen 8 PLA', 'mesprit': 'Gen 8 PLA', 'azelf': 'Gen 8 PLA', 'dialga': 'Gen 8 PLA', 'palkia': 'Gen 8 PLA', 'heatran': 'Gen 8 PLA', 'regigigas': 'Gen 8 PLA', 'giratina': 'Gen 8 PLA', 'cresselia': 'Gen 8 PLA', 'phione': 'Gen 8 PLA', 'darkrai': 'Gen 8 PLA', 'shaymin': 'Gen 8 PLA', 'tornadus': 'Gen 8 PLA', 'thundurus': 'Gen 8 PLA', 'landorus': 'Gen 8 PLA', 'enamorus': 'Gen 8 PLA', 'sprigatito': 'Gen 9 SV/ZA Starter', 'fuecoco': 'Gen 9 SV/ZA Starter', 'quaxly': 'Gen 9 SV/ZA Starter', 'koraidon': 'Gen 9 SV', 'miraidon': 'Gen 9 SV', 'klawf': 'Gen 9 SV Titan', 'bombirdier': 'Gen 9 SV Titan', 'orthworm': 'Gen 9 SV Titan', 'great-tusk': 'Gen 9 SV Titan', 'iron-treads': 'Gen 9 SV Titan', 'tatsugiri': 'Gen 9 SV Titan', 'ting-lu': 'Gen 9 SV', 'chien-pao': 'Gen 9 SV', 'wo-chien': 'Gen 9 SV', 'chi-yu': 'Gen 9 SV', 'walking-wake': 'Gen 9 SV Event Raid', 'iron-leaves': 'Gen 9 SV Event Raid', 'bloodmoon-ursaluna': 'Gen 9 Teal Mask', 'okidogi': 'Gen 9 Teal Mask', 'munkidori': 'Gen 9 Teal Mask', 'fezandipiti': 'Gen 9 Teal Mask', 'ogerpon': 'Gen 9 Teal Mask', 'terapagos': 'Gen 9 Indigo Disk', 'pecharunt': 'Gen 9 Indigo Disk', 'gouging-fire': 'Gen 9 Indigo Disk', 'raging-bolt': 'Gen 9 Indigo Disk', 'iron-crown': 'Gen 9 Indigo Disk', 'iron-boulder': 'Gen 9 Indigo Disk', 'articuno': 'Gen 9 Indigo Disk', 'zapdos': 'Gen 9 Indigo Disk', 'moltres': 'Gen 9 Indigo Disk', 'raikou': 'Gen 9 Indigo Disk', 'entei': 'Gen 9 Indigo Disk', 'suicune': 'Gen 9 Indigo Disk', 'lugia': 'Gen 9 Indigo Disk', 'ho-oh': 'Gen 9 Indigo Disk', 'latias': 'Gen 9 Indigo Disk', 'latios': 'Gen 9 Indigo Disk', 'cobalion': 'Gen 9 Indigo Disk', 'terrakion': 'Gen 9 Indigo Disk', 'virizion': 'Gen 9 Indigo Disk', 'kyurem': 'Gen 9 Indigo Disk', 'chikorita': 'Gen 9 Z-A Starter', 'tepig': 'Gen 9 Z-A Starter', 'totodile': 'Gen 9 Z-A Starter', 'absol': 'Gen 9 Z-A (Rogue Mega)' };
         const gen9SVTrades = ['snom', 'wooper', 'haunter', 'gengar', 'meowth-galar'];
         const gen9TealMaskGifts = ['growlithe-hisui', 'turtwig', 'chimchar', 'piplup'];
         const gen9IndigoDiskTrades = [ 'magby', 'dunsparce', 'wooper-paldea', 'pawmo', 'cetoddle', 'veluza', 'frigibax', 'combee', 'duraludon', 'meditite', 'sunflora', 'magnemite', 'mareanie', 'skarmory', 'glimmet', 'tinkatuff', 'greavard', 'gimmighoul', 'flittle', 'hattrem', 'meowth-alola', 'snubbull', 'gulpin', 'tauros-paldea', 'eevee', 'rockruff', 'skwovet', 'applin', 'poltchageist' ];
-        const gen9SevenStarRaids = [ 'charizard', 'cinderace', 'greninja', 'pikachu', 'decidueye', 'samurott', 'typhlosion', 'inteleon', 'chesnaught', 'delphox', 'rillaboom', 'mewtwo', 'decidueye-hisui', 'typhlosion-hisui', 'eevee', 'samurott-hisui', 'dialga', 'palkia', 'blaziken', 'empoleon', 'venusaur', 'blastoise', 'meganium', 'primarina', 'swampert', 'emboar', 'sceptile', 'dondozo', 'dragonite', 'incineroar', 'serperior', 'infernape', 'feraligatr', 'torterra', 'meowscarada', 'skeledirge', 'quaquaval', 'tyranitar', 'salamence', 'metagross', 'garchomp', 'porygon2', 'baxcalibur', 'kommo-o', 'roaring-moon', 'iron-valiant' ];
+        const gen9SevenStarRaids = [ 'charizard', 'cinderace', 'greninja', 'pikachu', 'decidueye', 'samurott', 'typhlosion', 'inteleon', 'chesnaught', 'delphox', 'rillaboom', 'mewtwo', 'decidueye-hisui', 'typhlosion-hisui', 'eevee', 'samurott-hisui', 'dialga', 'palkia', 'blaziken', 'empoleon', 'venusaur', 'blastoise', 'meganium', 'primarina', 'swampert', 'emboar', 'sceptile', 'dondozo', 'dragonite', 'incineroar', 'serperior', 'infernape', 'feraligatr', 'torterra', 'meowscarada', 'skeledirge', 'quaquaval', 'tyranitar', 'salamence', 'metgross', 'garchomp', 'porygon2', 'baxcalibur', 'kommo-o', 'roaring-moon', 'iron-valiant' ];
         const gen9SVStaticLocks = [ 'sprigatito', 'floragato', 'meowscarada', 'fuecoco', 'crocalor', 'skeledirge', 'quaxly', 'quaxwell', 'quaquaval' ];
         const gen9ZAStaticLocks = [ 'chikorita', 'bayleef', 'meganium', 'totodile', 'croconaw', 'feraligatr', 'tepig', 'pignite', 'emboar', 'absol' ];
-
         const counterEl = document.getElementById('counter');
         const spriteEl = document.getElementById('pokemon-sprite');
         const nameEl = document.getElementById('pokemon-name');
@@ -614,16 +563,13 @@
         const startHuntTimerBtn = document.getElementById('start-hunt-timer-btn');
         const pauseHuntTimerBtn = document.getElementById('pause-hunt-timer-btn');
         const resetHuntTimerBtn = document.getElementById('reset-hunt-timer-btn');
-
         const huntMethods = { 'gen9-za': [ { value: '4096', label: 'Wild Encounter (Base)' }, { value: '1024.3', label: 'Wild Encounter + Shiny Charm (+3 rolls!)' }, { value: '4096', label: 'Fossil Encounter (NO Charm boost!)' } ], 'gen9': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '2048', label: 'Outbreak (30-59 cleared)' }, { value: '1024', label: 'Outbreak (30-59) + Charm' }, { value: '1365', label: 'Outbreak (60+ cleared)' }, { value: '819', label: 'Outbreak (60+) + Charm' }, { value: '1024', label: 'Sparkling Power Lv. 3' }, { value: '683', 'label': 'Sparkling Lv. 3 + Charm' }, { value: '819', label: 'Outbreak (30-59) + Sparkling Lv. 3' }, { value: '585', label: 'Outbreak (30-59) + Sparkling + Charm' }, { value: '683', label: 'Outbreak (60+) + Sparkling Lv. 3' }, { value: '512', label: 'BEST: Outbreak (60+) + Sparkling + Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda Method + Charm' }, { value: '4103', label: 'Tera Raids' } ], 'gen8-pla': [ { value: '4096', label: 'Base Odds' }, { value: '2048', label: 'Research Level 10' }, { value: '1024', label: 'Perfect Research' }, { value: '819', label: 'Level 10 + Shiny Charm' }, { value: '585', label: 'Perfect + Shiny Charm' }, { value: '158', label: 'Mass Outbreak' }, { value: '152', label: 'Outbreak + Level 10' }, { value: '142', label: 'Outbreak + Perfect' }, { value: '137', label: 'Outbreak + Level 10 + Charm' }, { value: '128', label: 'BEST: Outbreak + Perfect + Charm' } ], 'gen8-swsh': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '2048', label: 'Brilliant (1-19 KOs)' }, { value: '1024', label: 'Brilliant (1-19 KOs) + Charm' }, { value: '2048', label: 'Brilliant (20-49 KOs)' }, { value: '1024', label: 'Brilliant (20-49 KOs) + Charm' }, { value: '1365', label: 'Brilliant (50-99 KOs)' }, { value: '819', label: 'Brilliant (50-99 KOs) + Charm' }, { value: '1024', label: 'Brilliant (100-199 KOs)' }, { value: '683', label: 'Brilliant (100-199 KOs) + Charm' }, { value: '819', label: 'Brilliant (200-299 KOs)' }, { value: '585', label: 'Brilliant (200-299 KOs) + Charm' }, { value: '683', label: 'Brilliant (300-499 KOs)' }, { value: '512', label: 'Brilliant (300-499 KOs) + Charm' }, { value: '585', label: 'Brilliant (500+ KOs)' }, { value: '455', label: 'Brilliant (500+ KOs) + Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda Method + Charm' }, { value: '300', label: 'Dynamax Adventures' }, { value: '100', label: 'BEST: Dynamax Adventures + Charm' } ], 'gen8-bdsp': [ { value: '4096', label: 'Random Encounter' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Shiny Charm' }, { value: '99', label: 'BEST: Poke Radar Chain 40' } ], 'gen7-lgpe': [ { value: '4096', label: 'Base (0-10 Combo)' }, { value: '2048', label: 'Lure Active (0-10)' }, { value: '1365', label: 'Charm (0-10)' }, { value: '1024', label: 'Lure + Charm (0-10)' }, { value: '1024', label: '11-20 Combo' }, { value: '819', label: '11-20 Combo + Lure' }, { value: '683', label: '11-20 Combo + Charm' }, { value: '585', label: '11-20 + Lure + Charm' }, { value: '512', label: '21-30 Combo' }, { value: '455', label: '21-30 Combo + Lure' }, { value: '410', label: '21-30 Combo + Charm' }, { value: '372', label: '21-30 + Lure + Charm' }, { value: '341', label: '31+ Combo' }, { value: '315', label: '31+ Combo + Lure' }, { value: '293', label: '31+ Combo + Charm' }, { value: '273', label: 'BEST: 31+ Combo + Lure + Charm' } ], 'gen7': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Charm' }, { value: '315', label: 'SOS Chain 30+' }, { value: '273', label: 'SOS Chain 30+ + Charm' }, { value: '100', label: 'Ultra Wormhole Legendary' }, { value: '8192', label: 'Gen I Transfer' } ], 'gen6': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Charm' }, { value: '819', label: 'Horde Encounter' }, { value: '273', label: 'Horde + Charm' }, { value: '819', label: 'Friend Safari' }, { value: '585', label: 'Friend Safari + Charm' }, { value: '100', label: 'Chain Fishing 20+' }, { value: '96', label: 'Chain Fishing 20+ + Charm' }, { value: '100', label: 'Poke Radar Chain 40' }, { value: '476', label: 'DexNav Search Lvl 999' }, { value: '173', label: 'DexNav 999 + Charm' }, { value: '99', label: 'DexNav Chain 50' }, { value: '73', label: 'DexNav Chain 50 + Charm' }, { value: '56', label: 'DexNav Chain 100' }, { value: '46', label: 'BEST: DexNav Chain 100 + Charm' } ], 'gen5': [ { value: '8192', label: 'Random Encounter' }, { value: '2731', label: 'Shiny Charm' }, { value: '1365', label: 'Masuda Method' }, { value: '1024', label: 'BEST: Masuda + Charm' } ], 'gen4': [ { value: '8192', label: 'Random Encounter' }, { value: '1638', label: 'Masuda Method' }, { value: '200', label: 'BEST: Poke Radar Chain 40' } ], 'gen3': [ { value: '8192', label: 'Random Encounter (1/8192)' } ], 'gen2': [ { value: '8192', label: 'Random Encounter' }, { value: '64', label: 'Breeding w/ Shiny Parent' }, { value: '14', label: 'Odd Egg (International)' }, { value: '50', label: 'Odd Egg (Japanese)' } ] };
-
         function updateMethodOptions() {
             const gen = generationEl.value;
             const methods = huntMethods[gen] || [];
             methodEl.innerHTML = methods.map(m => `<option value="${m.value}">${m.label}</option>`).join('');
             calculateOdds();
         }
-
         async function init() {
             await loadPokemonList();
             await loadPokemonData(currentPokemon.name);
@@ -631,7 +577,6 @@
             loadHistory();
             updateHuntTimerDisplay();
         }
-
         async function loadPokemonList() {
             try {
                 const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
@@ -642,7 +587,6 @@
                 listEl.innerHTML = '<div class="loading">ERROR LOADING POKEMON.</div>';
             }
         }
-
         function renderPokemonList(pokemon) {
             listEl.innerHTML = pokemon.map(p => `
                 <div class="pokemon-item ${p.name === currentPokemon.name ? 'selected' : ''}" data-name="${p.name}">
@@ -650,14 +594,12 @@
                     <span>#${String(p.id).padStart(3, '0')}</span>
                 </div>
             `).join('');
-
             document.querySelectorAll('.pokemon-item').forEach(item => {
                 item.addEventListener('click', () => {
                     selectPokemon(item.dataset.name);
                 });
             });
         }
-
         async function loadPokemonData(name) {
             try {
                 const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
@@ -671,7 +613,6 @@
                 console.error('Failed to load Pokemon:', error);
             }
         }
-
         function updateBadges(pokemonName) {
             let badges = '';
             if (shinyLockedPokemon[pokemonName]) { badges += `<div class="badge badge-danger">LOCKED!</div>`; }
@@ -680,7 +621,6 @@
             if (gen9SevenStarRaids.includes(pokemonName)) { badges += `<div class="badge badge-info">RAID LOCK</div>`; }
             badgesEl.innerHTML = badges;
         }
-
         function selectPokemon(name) {
             if (currentPokemon.name === name) return;
             loadPokemonData(name);
@@ -689,13 +629,11 @@
             const newSelected = listEl.querySelector(`.pokemon-item[data-name="${name}"]`);
             if (newSelected) { newSelected.classList.add('selected'); }
         }
-
         searchEl.addEventListener('input', (e) => {
             const search = e.target.value.toLowerCase();
             const filtered = allPokemon.filter(p => p.name.includes(search) || String(p.id).includes(search));
             renderPokemonList(filtered);
         });
-
         function calculateOdds() {
             const odds = parseFloat(methodEl.value);
             if (isNaN(odds) || odds <= 0) return;
@@ -706,56 +644,44 @@
             oddsMedianEl.textContent = `${median.toLocaleString()}`;
             updateOddsAlerts(prob, median);
         }
-
         function updateOddsAlerts(probability, median) {
             let alerts = '';
-            if (encounterCount > median * 2) { alerts += `<div class="alert alert-danger">WARNING: ${ (encounterCount / median).toFixed(1) }X OVER MEDIAN</div>`; } 
+            if (encounterCount > median * 2) { alerts += `<div class="alert alert-danger">WARNING: ${ (encounterCount / median).toFixed(1) }X OVER MEDIAN</div>`; }
             else if (encounterCount > median) { alerts += `<div class="alert alert-warning">PAST 50% THRESHOLD</div>`; }
             oddsAlertsEl.innerHTML = alerts;
         }
-
         function incrementCounter() {
             encounterCount++;
             counterEl.textContent = encounterCount.toLocaleString();
             calculateOdds();
         }
-
         document.getElementById('reset-btn').addEventListener('click', () => {
-            if (confirm('ARE YOU SURE?')) {
-                encounterCount = 0;
-                counterEl.textContent = '0';
-                stopTimer();
-                resetHuntTimer();
-                calculateOdds();
-            }
+            encounterCount = 0;
+            counterEl.textContent = '0';
+            stopTimer();
+            resetHuntTimer();
+            calculateOdds();
         });
-
         document.getElementById('increment-btn').addEventListener('click', incrementCounter);
-
         function startTimer() {
             const interval = parseInt(timerIntervalEl.value, 10);
             if (isNaN(interval) || interval < 1) return;
             stopTimer();
-            
-            incrementCounter(); 
+            incrementCounter();
             countdownValue = interval;
             autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
-
             countdownInterval = setInterval(() => {
                 countdownValue--;
                 autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
             }, 1000);
-
             timerInterval = setInterval(() => {
                 incrementCounter();
                 countdownValue = interval;
                 autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
             }, interval * 1000);
-
             document.getElementById('start-timer-btn').disabled = true;
             document.getElementById('stop-timer-btn').disabled = false;
         }
-
         function stopTimer() {
             clearInterval(timerInterval);
             clearInterval(countdownInterval);
@@ -765,10 +691,8 @@
             document.getElementById('start-timer-btn').disabled = false;
             document.getElementById('stop-timer-btn').disabled = true;
         }
-
         document.getElementById('start-timer-btn').addEventListener('click', startTimer);
         document.getElementById('stop-timer-btn').addEventListener('click', stopTimer);
-
         document.getElementById('save-hunt-btn').addEventListener('click', () => {
             if (encounterCount === 0) {
                 showMessage('NO ENCOUNTERS TO SAVE!', 'error');
@@ -786,12 +710,10 @@
             resetHuntTimer();
             calculateOdds();
         });
-
         function saveHistory() {
-            try { localStorage.setItem('shiny-hunt-history', JSON.stringify(huntHistory)); } 
+            try { localStorage.setItem('shiny-hunt-history', JSON.stringify(huntHistory)); }
             catch (e) { console.error('Could not save history:', e); }
         }
-
         function loadHistory() {
             try {
                 const saved = localStorage.getItem('shiny-hunt-history');
@@ -801,7 +723,6 @@
                 }
             } catch (e) { console.error('Could not load history:', e); }
         }
-
         function renderHistory() {
             if (huntHistory.length === 0) {
                 historyEl.innerHTML = '<p>NO SAVED HUNTS.</p>';
@@ -821,22 +742,17 @@
                     </div>`;
             }).join('')}</div>`;
         }
-        
         historyEl.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-hunt-btn')) {
                 const index = parseInt(e.target.dataset.index, 10);
-                if (confirm(`DELETE THIS HUNT?`)) {
-                    huntHistory.splice(index, 1);
-                    saveHistory();
-                    renderHistory();
-                }
+                huntHistory.splice(index, 1);
+                saveHistory();
+                renderHistory();
             }
         });
-
         function showMessage(text, type = 'success') {
             const existingMsg = document.querySelector('.success-message');
             if (existingMsg) existingMsg.remove();
-
             const msg = document.createElement('div');
             msg.className = 'success-message';
             msg.textContent = text;
@@ -847,26 +763,22 @@
             document.body.appendChild(msg);
             setTimeout(() => msg.remove(), 2000);
         }
-
         function capitalize(str) {
             if (!str) return '';
             return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
-
         function updateHuntTimerDisplay() {
             const elapsed = isHuntTimerRunning ? Date.now() - huntStartTime : huntElapsedTime;
             const hours = Math.floor(elapsed / 3600000);
             const minutes = Math.floor((elapsed % 3600000) / 60000);
             const seconds = Math.floor((elapsed % 60000) / 1000);
             const milliseconds = elapsed % 1000;
-
-            huntTimerDisplayEl.textContent = 
+            huntTimerDisplayEl.textContent =
                 `${String(hours).padStart(2, '0')}:` +
                 `${String(minutes).padStart(2, '0')}:` +
                 `${String(seconds).padStart(2, '0')}.` +
                 `${String(milliseconds).padStart(3, '0')}`;
         }
-
         function startHuntTimer() {
             if (isHuntTimerRunning) return;
             isHuntTimerRunning = true;
@@ -875,7 +787,6 @@
             startHuntTimerBtn.disabled = true;
             pauseHuntTimerBtn.disabled = false;
         }
-
         function pauseHuntTimer() {
             if (!isHuntTimerRunning) return;
             isHuntTimerRunning = false;
@@ -884,21 +795,17 @@
             startHuntTimerBtn.disabled = false;
             pauseHuntTimerBtn.disabled = true;
         }
-
         function resetHuntTimer() {
             pauseHuntTimer();
             huntElapsedTime = 0;
             huntStartTime = 0;
             updateHuntTimerDisplay();
         }
-
         startHuntTimerBtn.addEventListener('click', startHuntTimer);
         pauseHuntTimerBtn.addEventListener('click', pauseHuntTimer);
         resetHuntTimerBtn.addEventListener('click', resetHuntTimer);
-
         methodEl.addEventListener('change', calculateOdds);
         generationEl.addEventListener('change', updateMethodOptions);
-
         updateMethodOptions();
         init();
     </script>

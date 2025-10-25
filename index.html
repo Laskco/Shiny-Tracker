@@ -46,6 +46,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
+            word-break: break-word;
         }
         body::before {
             content: "";
@@ -403,6 +405,7 @@
             body { padding: 10px; font-size: 14px; }
             .header h1 { font-size: 1.5rem; }
             .counter-value { font-size: 3rem; }
+            #hunt-timer-display { font-size: 1.5rem; }
             .btn-group.three-buttons, .btn-group { grid-template-columns: 1fr; }
             .card-content { padding: 10px; }
             .pokemon-list {

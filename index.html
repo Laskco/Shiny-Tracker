@@ -303,7 +303,8 @@
         
         .timer-countdown {
             font-size: 1rem;
-            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
             color: var(--magenta);
         }
 
@@ -538,6 +539,7 @@
                 <div class="card-content">
                     <label>AUTO EVERY (SECS):</label>
                     <input type="number" id="timer-interval" class="timer-input" value="30" min="1" max="999">
+                    <div id="auto-counter-countdown" class="timer-countdown"></div>
                     <div class="btn-group">
                         <button id="start-timer-btn" class="btn">START</button>
                         <button id="stop-timer-btn" class="btn" disabled>STOP</button>
@@ -548,7 +550,7 @@
             <div class="card" id="hunt-timer-card">
                 <h3 class="card-title">TIMER.EXE</h3>
                 <div class="card-content">
-                    <div id="hunt-timer-display">00:00:00</div>
+                    <div id="hunt-timer-display">00:00:00.000</div>
                     <div class="btn-group three-buttons">
                         <button id="start-hunt-timer-btn" class="btn">START</button>
                         <button id="pause-hunt-timer-btn" class="btn" disabled>PAUSE</button>
@@ -580,7 +582,8 @@
         let countdownValue = 0;
 
         let huntTimerInterval = null;
-        let huntTimeSeconds = 0;
+        let huntStartTime = 0;
+        let huntElapsedTime = 0;
         let isHuntTimerRunning = false;
 
         const shinyLockedPokemon = { 'mew': 'Gen 2 (IVs prevent shiny)', 'celebi': 'Gen 3-7', 'manaphy': 'Gen 4 (Egg)', 'arceus': 'Gen 4-5', 'victini': 'Gen 5-7', 'reshiram': 'Gen 5', 'zekrom': 'Gen 5', 'keldeo': 'Gen 5-8', 'meloetta': 'Gen 5-7', 'groudon': 'Gen 6 ORAS Story', 'kyogre': 'Gen 6 ORAS Story', 'rayquaza': 'Gen 6 ORAS Story', 'zygarde': 'Gen 6-7', 'hoopa': 'Gen 6-7', 'volcanion': 'Gen 6-7', 'tapu-koko': 'Gen 7', 'tapu-lele': 'Gen 7', 'tapu-bulu': 'Gen 7', 'tapu-fini': 'Gen 7', 'cosmog': 'Gen 7-8', 'cosmoem': 'Gen 7', 'solgaleo': 'Gen 7-9', 'lunala': 'Gen 7-9', 'nihilego': 'Gen 7', 'buzzwole': 'Gen 7', 'pheromosa': 'Gen 7', 'xurkitree': 'Gen 7', 'celesteela': 'Gen 7', 'kartana': 'Gen 7', 'guzzlord': 'Gen 7', 'necrozma': 'Gen 7-9', 'magearna': 'Gen 7', 'marshadow': 'Gen 7', 'zeraora': 'Gen 7', 'pikachu': 'Gen 8 LGPE Starter / SwSh Gift', 'eevee': 'Gen 8 LGPE Starter / SwSh Gift', 'grookey': 'Gen 8 SwSh Starter', 'scorbunny': 'Gen 8 SwSh Starter', 'sobble': 'Gen 8 SwSh Starter', 'type-null': 'Gen 8 SwSh', 'silvally': 'Gen 8 SwSh', 'zacian': 'Gen 8 SwSh', 'zamazenta': 'Gen 8 SwSh', 'eternatus': 'Gen 8 SwSh', 'kubfu': 'Gen 8-9', 'urshifu': 'Gen 8 IoA', 'zarude': 'Gen 8 IoA', 'calyrex': 'Gen 8 CT', 'glastrier': 'Gen 8-9', 'spectrier': 'Gen 8-9', 'melmetal': 'Gen 8 Gigantamax', 'poipole': 'Gen 8 CT', 'articuno-galar': 'Gen 8 CT', 'zapdos-galar': 'Gen 8 CT', 'moltres-galar': 'Gen 8 CT', 'jirachi': 'Gen 8 BDSP Gift', 'rowlet': 'Gen 8 PLA Starter', 'cyndaquil': 'Gen 8 PLA Starter', 'oshawott': 'Gen 8 PLA Starter', 'uxie': 'Gen 8 PLA', 'mesprit': 'Gen 8 PLA', 'azelf': 'Gen 8 PLA', 'dialga': 'Gen 8 PLA', 'palkia': 'Gen 8 PLA', 'heatran': 'Gen 8 PLA', 'regigigas': 'Gen 8 PLA', 'giratina': 'Gen 8 PLA', 'cresselia': 'Gen 8 PLA', 'phione': 'Gen 8 PLA', 'darkrai': 'Gen 8 PLA', 'shaymin': 'Gen 8 PLA', 'tornadus': 'Gen 8 PLA', 'thundurus': 'Gen 8 PLA', 'landorus': 'Gen 8 PLA', 'enamorus': 'Gen 8 PLA', 'sprigatito': 'Gen 9 SV/ZA Starter', 'fuecoco': 'Gen 9 SV/ZA Starter', 'quaxly': 'Gen 9 SV/ZA Starter', 'koraidon': 'Gen 9 SV', 'miraidon': 'Gen 9 SV', 'klawf': 'Gen 9 SV Titan', 'bombirdier': 'Gen 9 SV Titan', 'orthworm': 'Gen 9 SV Titan', 'great-tusk': 'Gen 9 SV Titan', 'iron-treads': 'Gen 9 SV Titan', 'tatsugiri': 'Gen 9 SV Titan', 'ting-lu': 'Gen 9 SV', 'chien-pao': 'Gen 9 SV', 'wo-chien': 'Gen 9 SV', 'chi-yu': 'Gen 9 SV', 'walking-wake': 'Gen 9 SV Event Raid', 'iron-leaves': 'Gen 9 SV Event Raid', 'bloodmoon-ursaluna': 'Gen 9 Teal Mask', 'okidogi': 'Gen 9 Teal Mask', 'munkidori': 'Gen 9 Teal Mask', 'fezandipiti': 'Gen 9 Teal Mask', 'ogerpon': 'Gen 9 Teal Mask', 'terapagos': 'Gen 9 Indigo Disk', 'pecharunt': 'Gen 9 Indigo Disk', 'gouging-fire': 'Gen 9 Indigo Disk', 'raging-bolt': 'Gen 9 Indigo Disk', 'iron-crown': 'Gen 9 Indigo Disk', 'iron-boulder': 'Gen 9 Indigo Disk', 'articuno': 'Gen 9 Indigo Disk', 'zapdos': 'Gen 9 Indigo Disk', 'moltres': 'Gen 9 Indigo Disk', 'raikou': 'Gen 9 Indigo Disk', 'entei': 'Gen 9 Indigo Disk', 'suicune': 'Gen 9 Indigo Disk', 'lugia': 'Gen 9 Indigo Disk', 'ho-oh': 'Gen 9 Indigo Disk', 'latias': 'Gen 9 Indigo Disk', 'latios': 'Gen 9 Indigo Disk', 'cobalion': 'Gen 9 Indigo Disk', 'terrakion': 'Gen 9 Indigo Disk', 'virizion': 'Gen 9 Indigo Disk', 'kyurem': 'Gen 9 Indigo Disk', 'chikorita': 'Gen 9 Z-A Starter', 'tepig': 'Gen 9 Z-A Starter', 'totodile': 'Gen 9 Z-A Starter', 'absol': 'Gen 9 Z-A (Rogue Mega)' };
@@ -605,6 +608,7 @@
         const oddsMedianEl = document.getElementById('odds-median');
         const oddsAlertsEl = document.getElementById('odds-alerts');
         const timerIntervalEl = document.getElementById('timer-interval');
+        const autoCounterCountdownEl = document.getElementById('auto-counter-countdown');
         const historyEl = document.getElementById('hunt-history');
         const huntTimerDisplayEl = document.getElementById('hunt-timer-display');
         const startHuntTimerBtn = document.getElementById('start-hunt-timer-btn');
@@ -625,6 +629,7 @@
             await loadPokemonData(currentPokemon.name);
             calculateOdds();
             loadHistory();
+            updateHuntTimerDisplay();
         }
 
         async function loadPokemonList() {
@@ -731,15 +736,32 @@
             const interval = parseInt(timerIntervalEl.value, 10);
             if (isNaN(interval) || interval < 1) return;
             stopTimer();
+            
             incrementCounter(); 
-            timerInterval = setInterval(incrementCounter, interval * 1000);
+            countdownValue = interval;
+            autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
+
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
+            }, 1000);
+
+            timerInterval = setInterval(() => {
+                incrementCounter();
+                countdownValue = interval;
+                autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
+            }, interval * 1000);
+
             document.getElementById('start-timer-btn').disabled = true;
             document.getElementById('stop-timer-btn').disabled = false;
         }
 
         function stopTimer() {
             clearInterval(timerInterval);
+            clearInterval(countdownInterval);
             timerInterval = null;
+            countdownInterval = null;
+            autoCounterCountdownEl.textContent = '';
             document.getElementById('start-timer-btn').disabled = false;
             document.getElementById('stop-timer-btn').disabled = true;
         }
@@ -832,19 +854,24 @@
         }
 
         function updateHuntTimerDisplay() {
-            const hours = Math.floor(huntTimeSeconds / 3600);
-            const minutes = Math.floor((huntTimeSeconds % 3600) / 60);
-            const seconds = huntTimeSeconds % 60;
-            huntTimerDisplayEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const elapsed = isHuntTimerRunning ? Date.now() - huntStartTime : huntElapsedTime;
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            const milliseconds = elapsed % 1000;
+
+            huntTimerDisplayEl.textContent = 
+                `${String(hours).padStart(2, '0')}:` +
+                `${String(minutes).padStart(2, '0')}:` +
+                `${String(seconds).padStart(2, '0')}.` +
+                `${String(milliseconds).padStart(3, '0')}`;
         }
 
         function startHuntTimer() {
             if (isHuntTimerRunning) return;
             isHuntTimerRunning = true;
-            huntTimerInterval = setInterval(() => {
-                huntTimeSeconds++;
-                updateHuntTimerDisplay();
-            }, 1000);
+            huntStartTime = Date.now() - huntElapsedTime;
+            huntTimerInterval = setInterval(updateHuntTimerDisplay, 47);
             startHuntTimerBtn.disabled = true;
             pauseHuntTimerBtn.disabled = false;
         }
@@ -853,13 +880,15 @@
             if (!isHuntTimerRunning) return;
             isHuntTimerRunning = false;
             clearInterval(huntTimerInterval);
+            huntElapsedTime = Date.now() - huntStartTime;
             startHuntTimerBtn.disabled = false;
             pauseHuntTimerBtn.disabled = true;
         }
 
         function resetHuntTimer() {
             pauseHuntTimer();
-            huntTimeSeconds = 0;
+            huntElapsedTime = 0;
+            huntStartTime = 0;
             updateHuntTimerDisplay();
         }
 

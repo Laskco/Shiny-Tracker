@@ -274,7 +274,6 @@
         #hunt-timer-display {
             font-size: 2rem;
             text-align: center;
-            margin: 20px 0;
             background: var(--bg-screen);
             color: var(--cyan);
             padding: 15px;
@@ -283,9 +282,35 @@
         .timer-countdown {
             font-size: 1rem;
             text-align: center;
-            margin-top: 15px;
             color: var(--magenta);
             text-shadow: 1px 1px #000;
+        }
+        .auto-counter-display {
+            background: var(--bg-screen);
+            padding: 15px;
+            border: 2px inset var(--border-dark);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 110px;
+        }
+        #auto-counter-input {
+            background: none;
+            border: none;
+            color: var(--cyan);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            line-height: 1.5rem;
+            text-align: center;
+            width: 100%;
+        }
+        #auto-counter-input:focus {
+            outline: none;
+        }
+        #auto-counter-countdown {
+            margin-top: -25px;
+            min-height: 1.5em;
         }
         .odds-info {
             display: grid;
@@ -316,11 +341,26 @@
             gap: 10px;
             background: rgba(255,255,255,0.5);
         }
+        .history-item-info {
+            flex-grow: 1;
+        }
         .history-pokemon { font-size: 0.8rem; }
-        .history-count { color: var(--title-bar-bg); font-size: 1rem; }
-        .delete-hunt-btn {
+        .history-details {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            color: #333;
+        }
+        .history-count, .history-time, .history-prob {
+            color: var(--title-bar-bg);
+            font-weight: bold;
+        }
+        .history-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .history-btn {
             background: var(--bg-card);
-            color: var(--red);
             border: 2px solid;
             border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
             font-family: 'Press Start 2P', cursive;
@@ -328,13 +368,14 @@
             cursor: pointer;
             width: 30px;
             height: 30px;
-            flex-shrink: 0;
             padding: 0;
             line-height: 1;
         }
-        .delete-hunt-btn:active {
+        .history-btn:active {
             border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
         }
+        .delete-hunt-btn { color: var(--red); }
+        .continue-hunt-btn { color: var(--green); }
         .alert {
             padding: 15px;
             margin-top: 15px;
@@ -497,9 +538,11 @@
             <div class="card" id="auto-counter-card">
                 <h3 class="card-title">AUTO_CNT.EXE</h3>
                 <div class="card-content">
-                    <label>AUTO EVERY (SECS):</label>
-                    <input type="number" id="timer-interval" class="timer-input" value="30" min="1" max="999">
-                    <div id="auto-counter-countdown" class="timer-countdown"></div>
+                    <label>AUTO EVERY (MM:SS.MS):</label>
+                    <div class="auto-counter-display">
+                        <input type="text" id="auto-counter-input" value="00:05.000">
+                        <div id="auto-counter-countdown" class="timer-countdown"></div>
+                    </div>
                     <div class="btn-group">
                         <button id="start-timer-btn" class="btn">START</button>
                         <button id="stop-timer-btn" class="btn" disabled>STOP</button>
@@ -509,12 +552,13 @@
             <div class="card" id="hunt-timer-card">
                 <h3 class="card-title">TIMER.EXE</h3>
                 <div class="card-content">
-                    <div id="hunt-timer-display">00:00:00.000</div>
+                    <div id="hunt-timer-display" style="margin-bottom: 20px;">00:00:00.000</div>
                     <div class="btn-group three-buttons">
                         <button id="start-hunt-timer-btn" class="btn">START</button>
                         <button id="pause-hunt-timer-btn" class="btn" disabled>PAUSE</button>
                         <button id="reset-hunt-timer-btn" class="btn">RESET</button>
                     </div>
+                    <button id="transfer-time-btn" class="btn btn-full" style="margin-top: 15px;">Use Time for Auto</button>
                 </div>
             </div>
             <div class="card" id="history-card">
@@ -534,7 +578,6 @@
         let huntHistory = [];
         let timerInterval = null;
         let countdownInterval = null;
-        let countdownValue = 0;
         let huntTimerInterval = null;
         let huntStartTime = 0;
         let huntElapsedTime = 0;
@@ -559,14 +602,16 @@
         const oddsCumulativeEl = document.getElementById('odds-cumulative');
         const oddsMedianEl = document.getElementById('odds-median');
         const oddsAlertsEl = document.getElementById('odds-alerts');
-        const timerIntervalEl = document.getElementById('timer-interval');
+        const autoCounterInputEl = document.getElementById('auto-counter-input');
         const autoCounterCountdownEl = document.getElementById('auto-counter-countdown');
         const historyEl = document.getElementById('hunt-history');
         const huntTimerDisplayEl = document.getElementById('hunt-timer-display');
         const startHuntTimerBtn = document.getElementById('start-hunt-timer-btn');
         const pauseHuntTimerBtn = document.getElementById('pause-hunt-timer-btn');
         const resetHuntTimerBtn = document.getElementById('reset-hunt-timer-btn');
+        const transferTimeBtn = document.getElementById('transfer-time-btn');
         const huntMethods = { 'gen9-za': [ { value: '4096', label: 'Wild Encounter (Base)' }, { value: '1024.3', label: 'Wild Encounter + Shiny Charm (+3 rolls!)' }, { value: '4096', label: 'Fossil Encounter (NO Charm boost!)' } ], 'gen9': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '2048', label: 'Outbreak (30-59 cleared)' }, { value: '1024', label: 'Outbreak (30-59) + Charm' }, { value: '1365', label: 'Outbreak (60+ cleared)' }, { value: '819', label: 'Outbreak (60+) + Charm' }, { value: '1024', label: 'Sparkling Power Lv. 3' }, { value: '683', 'label': 'Sparkling Lv. 3 + Charm' }, { value: '819', label: 'Outbreak (30-59) + Sparkling Lv. 3' }, { value: '585', label: 'Outbreak (30-59) + Sparkling + Charm' }, { value: '683', label: 'Outbreak (60+) + Sparkling Lv. 3' }, { value: '512', label: 'BEST: Outbreak (60+) + Sparkling + Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda Method + Charm' }, { value: '4103', label: 'Tera Raids' } ], 'gen8-pla': [ { value: '4096', label: 'Base Odds' }, { value: '2048', label: 'Research Level 10' }, { value: '1024', label: 'Perfect Research' }, { value: '819', label: 'Level 10 + Shiny Charm' }, { value: '585', label: 'Perfect + Shiny Charm' }, { value: '158', label: 'Mass Outbreak' }, { value: '152', label: 'Outbreak + Level 10' }, { value: '142', label: 'Outbreak + Perfect' }, { value: '137', label: 'Outbreak + Level 10 + Charm' }, { value: '128', label: 'BEST: Outbreak + Perfect + Charm' } ], 'gen8-swsh': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '2048', label: 'Brilliant (1-19 KOs)' }, { value: '1024', label: 'Brilliant (1-19 KOs) + Charm' }, { value: '2048', label: 'Brilliant (20-49 KOs)' }, { value: '1024', label: 'Brilliant (20-49 KOs) + Charm' }, { value: '1365', label: 'Brilliant (50-99 KOs)' }, { value: '819', label: 'Brilliant (50-99 KOs) + Charm' }, { value: '1024', label: 'Brilliant (100-199 KOs)' }, { value: '683', label: 'Brilliant (100-199 KOs) + Charm' }, { value: '819', label: 'Brilliant (200-299 KOs)' }, { value: '585', label: 'Brilliant (200-299 KOs) + Charm' }, { value: '683', label: 'Brilliant (300-499 KOs)' }, { value: '512', label: 'Brilliant (300-499 KOs) + Charm' }, { value: '585', label: 'Brilliant (500+ KOs)' }, { value: '455', label: 'Brilliant (500+ KOs) + Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda Method + Charm' }, { value: '300', label: 'Dynamax Adventures' }, { value: '100', label: 'BEST: Dynamax Adventures + Charm' } ], 'gen8-bdsp': [ { value: '4096', label: 'Random Encounter' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Shiny Charm' }, { value: '99', label: 'BEST: Poke Radar Chain 40' } ], 'gen7-lgpe': [ { value: '4096', label: 'Base (0-10 Combo)' }, { value: '2048', label: 'Lure Active (0-10)' }, { value: '1365', label: 'Charm (0-10)' }, { value: '1024', label: 'Lure + Charm (0-10)' }, { value: '1024', label: '11-20 Combo' }, { value: '819', label: '11-20 Combo + Lure' }, { value: '683', label: '11-20 Combo + Charm' }, { value: '585', label: '11-20 + Lure + Charm' }, { value: '512', label: '21-30 Combo' }, { value: '455', label: '21-30 Combo + Lure' }, { value: '410', label: '21-30 Combo + Charm' }, { value: '372', label: '21-30 + Lure + Charm' }, { value: '341', label: '31+ Combo' }, { value: '315', label: '31+ Combo + Lure' }, { value: '293', label: '31+ Combo + Charm' }, { value: '273', label: 'BEST: 31+ Combo + Lure + Charm' } ], 'gen7': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Charm' }, { value: '315', label: 'SOS Chain 30+' }, { value: '273', label: 'SOS Chain 30+ + Charm' }, { value: '100', label: 'Ultra Wormhole Legendary' }, { value: '8192', label: 'Gen I Transfer' } ], 'gen6': [ { value: '4096', label: 'Random Encounter' }, { value: '1365', label: 'Shiny Charm' }, { value: '683', label: 'Masuda Method' }, { value: '512', label: 'Masuda + Charm' }, { value: '819', label: 'Horde Encounter' }, { value: '273', label: 'Horde + Charm' }, { value: '819', label: 'Friend Safari' }, { value: '585', label: 'Friend Safari + Charm' }, { value: '100', label: 'Chain Fishing 20+' }, { value: '96', label: 'Chain Fishing 20+ + Charm' }, { value: '100', label: 'Poke Radar Chain 40' }, { value: '476', label: 'DexNav Search Lvl 999' }, { value: '173', label: 'DexNav 999 + Charm' }, { value: '99', label: 'DexNav Chain 50' }, { value: '73', label: 'DexNav Chain 50 + Charm' }, { value: '56', label: 'DexNav Chain 100' }, { value: '46', label: 'BEST: DexNav Chain 100 + Charm' } ], 'gen5': [ { value: '8192', label: 'Random Encounter' }, { value: '2731', label: 'Shiny Charm' }, { value: '1365', label: 'Masuda Method' }, { value: '1024', label: 'BEST: Masuda + Charm' } ], 'gen4': [ { value: '8192', label: 'Random Encounter' }, { value: '1638', label: 'Masuda Method' }, { value: '200', label: 'BEST: Poke Radar Chain 40' } ], 'gen3': [ { value: '8192', label: 'Random Encounter (1/8192)' } ], 'gen2': [ { value: '8192', label: 'Random Encounter' }, { value: '64', label: 'Breeding w/ Shiny Parent' }, { value: '14', label: 'Odd Egg (International)' }, { value: '50', label: 'Odd Egg (Japanese)' } ] };
+
         function updateMethodOptions() {
             const gen = generationEl.value;
             const methods = huntMethods[gen] || [];
@@ -654,6 +699,7 @@
             oddsAlertsEl.innerHTML = alerts;
         }
         function incrementCounter() {
+            startHuntTimer();
             encounterCount++;
             counterEl.textContent = encounterCount.toLocaleString();
             calculateOdds();
@@ -666,22 +712,52 @@
             calculateOdds();
         });
         document.getElementById('increment-btn').addEventListener('click', incrementCounter);
+        function parseMMSSmsStringToMS(timeStr) {
+            if (!timeStr || typeof timeStr !== 'string') return NaN;
+            let totalMs = 0;
+            const parts = timeStr.split(':');
+            let secMsPart;
+            if (parts.length > 1) {
+                const mins = parseInt(parts[0], 10);
+                totalMs += isNaN(mins) ? 0 : mins * 60000;
+                secMsPart = parts[1];
+            } else {
+                secMsPart = parts[0];
+            }
+            const secParts = secMsPart.split('.');
+            const secs = parseInt(secParts[0], 10);
+            totalMs += isNaN(secs) ? 0 : secs * 1000;
+            if (secParts.length > 1) {
+                const ms = parseInt(secParts[1].padEnd(3, '0').slice(0, 3), 10);
+                totalMs += isNaN(ms) ? 0 : ms;
+            }
+            return totalMs;
+        }
+        function formatMSToMMSSmsString(ms) {
+            if (isNaN(ms) || ms < 0) return '00:00.000';
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = ms % 1000;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+        }
         function startTimer() {
-            const interval = parseInt(timerIntervalEl.value, 10);
-            if (isNaN(interval) || interval < 1) return;
+            const interval = parseMMSSmsStringToMS(autoCounterInputEl.value);
+            if (isNaN(interval) || interval < 100) {
+                showMessage('INVALID INTERVAL! (MIN 0.1s)', 'error');
+                return;
+            }
             stopTimer();
             incrementCounter();
-            countdownValue = interval;
-            autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
+            let countdownEndTime = Date.now() + interval;
             countdownInterval = setInterval(() => {
-                countdownValue--;
-                autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
-            }, 1000);
+                const remainingTime = Math.max(0, countdownEndTime - Date.now());
+                autoCounterCountdownEl.textContent = `NEXT IN: ${formatMSToMMSSmsString(remainingTime)}`;
+            }, 47);
             timerInterval = setInterval(() => {
                 incrementCounter();
-                countdownValue = interval;
-                autoCounterCountdownEl.textContent = `NEXT IN: ${countdownValue}s`;
-            }, interval * 1000);
+                countdownEndTime = Date.now() + interval;
+            }, interval);
             document.getElementById('start-timer-btn').disabled = true;
             document.getElementById('stop-timer-btn').disabled = false;
         }
@@ -701,7 +777,19 @@
                 showMessage('NO ENCOUNTERS TO SAVE!', 'error');
                 return;
             }
-            const hunt = { pokemon: currentPokemon.name, id: currentPokemon.id, count: encounterCount, method: methodEl.options[methodEl.selectedIndex].text, odds: methodEl.value, date: new Date().toISOString() };
+            const intervalInMs = parseMMSSmsStringToMS(autoCounterInputEl.value);
+            const hunt = {
+                pokemon: currentPokemon.name,
+                id: currentPokemon.id,
+                count: encounterCount,
+                generation: generationEl.value,
+                method: methodEl.options[methodEl.selectedIndex].text,
+                odds: methodEl.value,
+                probability: oddsCumulativeEl.textContent,
+                time: isHuntTimerRunning ? (Date.now() - huntStartTime) : huntElapsedTime,
+                autoCounterInterval: isNaN(intervalInMs) ? 5000 : intervalInMs,
+                date: new Date().toISOString()
+            };
             huntHistory.unshift(hunt);
             if (huntHistory.length > 50) huntHistory.pop();
             saveHistory();
@@ -738,21 +826,50 @@
                     <div class="history-item">
                         <div class="history-item-info">
                             <div class="history-pokemon">${capitalize(h.pokemon)}</div>
+                            <div class="history-details">
+                                ENC: <span class="history-count">${h.count.toLocaleString()}</span> | 
+                                TIME: <span class="history-time">${formatMilliseconds(h.time)}</span> | 
+                                PROB: <span class="history-prob">${h.probability}</span>
+                            </div>
                             <div style="font-size: 0.6rem; color: #656565; margin-top: 4px;">${dateStr}</div>
                         </div>
-                        <div class="history-count">${h.count.toLocaleString()}</div>
-                        <button class="delete-hunt-btn" data-index="${index}" title="Delete Hunt">X</button>
+                        <div class="history-actions">
+                            <button class="history-btn continue-hunt-btn" data-index="${index}" title="Continue Hunt">&#9654;</button>
+                            <button class="history-btn delete-hunt-btn" data-index="${index}" title="Delete Hunt">X</button>
+                        </div>
                     </div>`;
             }).join('')}</div>`;
         }
         historyEl.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-hunt-btn')) {
-                const index = parseInt(e.target.dataset.index, 10);
+            const target = e.target.closest('.history-btn');
+            if (!target) return;
+            const index = parseInt(target.dataset.index, 10);
+            if (target.classList.contains('delete-hunt-btn')) {
+                huntHistory.splice(index, 1);
+                saveHistory();
+                renderHistory();
+            } else if (target.classList.contains('continue-hunt-btn')) {
+                loadHunt(huntHistory[index]);
                 huntHistory.splice(index, 1);
                 saveHistory();
                 renderHistory();
             }
         });
+        function loadHunt(hunt) {
+            stopTimer();
+            resetHuntTimer();
+            encounterCount = hunt.count;
+            selectPokemon(hunt.pokemon);
+            generationEl.value = hunt.generation;
+            updateMethodOptions();
+            methodEl.value = hunt.odds;
+            autoCounterInputEl.value = formatMSToMMSSmsString(hunt.autoCounterInterval);
+            huntElapsedTime = hunt.time;
+            counterEl.textContent = encounterCount.toLocaleString();
+            updateHuntTimerDisplay();
+            calculateOdds();
+            showMessage(`CONTINUING HUNT FOR ${capitalize(hunt.pokemon)}!`);
+        }
         function showMessage(text, type = 'success') {
             const existingMsg = document.querySelector('.success-message');
             if (existingMsg) existingMsg.remove();
@@ -764,23 +881,23 @@
                 msg.style.color = '#fff';
             }
             document.body.appendChild(msg);
-            setTimeout(() => msg.remove(), 2000);
+            setTimeout(() => msg.remove(), 2500);
         }
         function capitalize(str) {
             if (!str) return '';
             return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
+        function formatMilliseconds(ms) {
+            if (isNaN(ms) || ms < 0) return '00:00:00.000';
+            const hours = Math.floor(ms / 3600000);
+            const minutes = Math.floor((ms % 3600000) / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            const milliseconds = ms % 1000;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+        }
         function updateHuntTimerDisplay() {
             const elapsed = isHuntTimerRunning ? Date.now() - huntStartTime : huntElapsedTime;
-            const hours = Math.floor(elapsed / 3600000);
-            const minutes = Math.floor((elapsed % 3600000) / 60000);
-            const seconds = Math.floor((elapsed % 60000) / 1000);
-            const milliseconds = elapsed % 1000;
-            huntTimerDisplayEl.textContent =
-                `${String(hours).padStart(2, '0')}:` +
-                `${String(minutes).padStart(2, '0')}:` +
-                `${String(seconds).padStart(2, '0')}.` +
-                `${String(milliseconds).padStart(3, '0')}`;
+            huntTimerDisplayEl.textContent = formatMilliseconds(elapsed);
         }
         function startHuntTimer() {
             if (isHuntTimerRunning) return;
@@ -799,14 +916,33 @@
             pauseHuntTimerBtn.disabled = true;
         }
         function resetHuntTimer() {
-            pauseHuntTimer();
+            if (isHuntTimerRunning) {
+                isHuntTimerRunning = false;
+                clearInterval(huntTimerInterval);
+                startHuntTimerBtn.disabled = false;
+                pauseHuntTimerBtn.disabled = true;
+            }
             huntElapsedTime = 0;
             huntStartTime = 0;
             updateHuntTimerDisplay();
         }
+        function transferTimeToAutoCounter() {
+            if (isHuntTimerRunning) {
+                pauseHuntTimer();
+            }
+            const timeToTransfer = huntElapsedTime;
+            if (timeToTransfer <= 0) {
+                showMessage('TIMER HAS NO TIME!', 'error');
+                return;
+            }
+            stopTimer();
+            autoCounterInputEl.value = formatMSToMMSSmsString(timeToTransfer);
+            showMessage('INTERVAL SET FROM TIMER!');
+        }
         startHuntTimerBtn.addEventListener('click', startHuntTimer);
         pauseHuntTimerBtn.addEventListener('click', pauseHuntTimer);
         resetHuntTimerBtn.addEventListener('click', resetHuntTimer);
+        transferTimeBtn.addEventListener('click', transferTimeToAutoCounter);
         methodEl.addEventListener('change', calculateOdds);
         generationEl.addEventListener('change', updateMethodOptions);
         updateMethodOptions();

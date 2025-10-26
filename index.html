@@ -309,7 +309,7 @@
             outline: none;
         }
         #auto-counter-countdown {
-            margin-top: -25px;
+            margin-top: 10px;
             min-height: 1.5em;
         }
         .odds-info {
@@ -769,6 +769,7 @@
             autoCounterCountdownEl.textContent = '';
             document.getElementById('start-timer-btn').disabled = false;
             document.getElementById('stop-timer-btn').disabled = true;
+            pauseHuntTimer();
         }
         document.getElementById('start-timer-btn').addEventListener('click', startTimer);
         document.getElementById('stop-timer-btn').addEventListener('click', stopTimer);
@@ -850,9 +851,6 @@
                 renderHistory();
             } else if (target.classList.contains('continue-hunt-btn')) {
                 loadHunt(huntHistory[index]);
-                huntHistory.splice(index, 1);
-                saveHistory();
-                renderHistory();
             }
         });
         function loadHunt(hunt) {
